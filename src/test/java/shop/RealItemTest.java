@@ -3,27 +3,33 @@ package shop;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
-class RealItemTest {
+public class RealItemTest {
 
-    private static RealItem car;
+    private RealItem car;
     @BeforeAll
-    static void setUp() {
+    public void setup() {
         car = new RealItem();
     }
 
-    @DisplayName(value = "Real Item test - Set weight for Real Item")
+    @DisplayName(value = "Real Item test - To String for Real Item")
     @Test
-    public void REAL_ITEM_SET_WEIGHT_TEST_1() {
-        double expectedWeight = 1123.0;
-        car.setWeight(expectedWeight);
+    public void realItemToStringTest() {
+        double realItemWeight = 123.0;
+        String realItemName = "testRealName";
+        double realItemPrice = 321.0;
+        car.setName(realItemName);
+        car.setPrice(realItemPrice);
+        car.setWeight(realItemWeight);
+        String expectedString = "Class: " + car.getClass() + "; Name: " + realItemName + "; Price: " + realItemPrice +"; Weight: " +realItemWeight;
 
-        double actualWeight = car.getWeight();
-        assertEquals(expectedWeight, actualWeight, "Weight is invalid");
+        String actualString = car.toString();
+        assertEquals(expectedString,actualString, "Text is not equals");
     }
 
     @AfterAll
-    static void tearDown() {
+    public void teardown() {
         car = null;
     }
 }

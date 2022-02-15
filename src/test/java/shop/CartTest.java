@@ -1,33 +1,35 @@
 package shop;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.*;
+
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
-class CartTest {
+public class CartTest {
 
-    private static Cart newCart;
+    private Cart newCart;
 
     @BeforeAll
-    static void setUp() {
-        String cartName = "Test-cart";
+    public void setup() {
+        Faker faker = new Faker();
+        String cartName = faker.name().lastName().toLowerCase(Locale.ROOT);
         newCart = new Cart(cartName);
     }
 
-    @DisplayName(value = "Cart test - Add invalid Real Item")
+    @DisplayName(value = "Cart test - Add item to Cart test")
     @Test
-    void CART_ADD_REAL_ITEM_TEST_1() {
-        assertThrows(NullPointerException.class, () -> {
-            newCart.addRealItem(null);
-        });
+    public void CartAddItemToCartTest() {
+
+        //TODO test for add to cart operation
+
     }
 
     @DisplayName(value = "Cart test - Delete Item test")
     @Test
-    void CART_DELETE_REAL_ITEM_TEST_1() {
+    public void CartDeleteRealItemTest() {
 
         RealItem testRealItem = new RealItem();
         double realItemPrice = 123.0;
@@ -43,7 +45,7 @@ class CartTest {
     }
 
     @AfterAll
-    static void tearDown() {
+    public void teardown() {
         newCart = null;
     }
 }

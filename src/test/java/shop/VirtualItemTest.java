@@ -4,27 +4,34 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class VirtualItemTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class VirtualItemTest {
 
-    private static VirtualItem desk;
+    private VirtualItem desk;
 
     @BeforeAll
-    static void setUp() {
+    public void setup() {
         desk = new VirtualItem();
+
     }
 
-    @DisplayName(value = "Virtual Item test - Set size on disk for Virtual Item")
+    @DisplayName(value = "Virtual Item test - To String for Virtual Item")
     @Test
-    public void VIRTUAL_ITEM_SET_SIZE_TEST_1() {
-        double expectedSize = 3000.0;
-        desk.setSizeOnDisk(expectedSize);
+    public void VirtualItemToStringTest() {
+        double sizeOnDisc = 123.0;
+        String virtualItemName = "testVirtualName";
+        double virtualItemPrice = 321.0;
+        desk.setName(virtualItemName);
+        desk.setPrice(virtualItemPrice);
+        desk.setSizeOnDisk(sizeOnDisc);
+        String expectedString = "Class: " + desk.getClass() + "; Name: " + virtualItemName + "; Price: " + virtualItemPrice +"; Size on disk: " +sizeOnDisc;
 
-        double actualSize = desk.getSizeOnDisk();
-        assertEquals(expectedSize, actualSize, "Size is invalid");
+        String actualString = desk.toString();
+        assertEquals(expectedString,actualString, "Text is not equals");
     }
 
     @AfterAll
-    static void tearDown() {
+    public void teardown() {
         desk = null;
     }
 }
