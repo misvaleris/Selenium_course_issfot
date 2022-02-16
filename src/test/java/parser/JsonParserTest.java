@@ -5,90 +5,80 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import shop.Cart;
+import shop.RealItem;
 
-import java.io.*;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonParserTest {
 
+    public static final String RESOURCE_PATH = "src/main/resources/%s.json";
     private JsonParser jsonParser;
-    private String expectedData;
-    private String cartName;
+    private static String cartName;
+    private static String filePath;
+    private static Faker faker;
+    private static ArrayList<String> listOfFiles;
 
     @BeforeEach
-    public void init() throws IOException {
+    public void init() {
         jsonParser = new JsonParser();
-        Faker faker = new Faker();
+        faker = new Faker();
         cartName = faker.name().firstName().toLowerCase(Locale.ROOT);
-        String fileName = "src/main/resources/" + cartName + ".json";
-        File file = new File(fileName);
-        if (file.createNewFile()) {
-            InputStream inputStreamExpected = JsonParserTest.class.getResourceAsStream(file.getAbsolutePath());
-            expectedData = readFromInputStream(inputStreamExpected);
-        }
+        filePath = String.format(RESOURCE_PATH, cartName);
+        listOfFiles = new ArrayList<>();
+        listOfFiles.add(filePath);
     }
 
-//    @Disabled("Disabled for testing purposes")
+    @Disabled("Disabled for testing purposes")
     @DisplayName(value = "JSON Parser test - Write to existing file")
     @Test
     public void ParserWritePositiveTest() {
-        //TODO спросить у Димы по поводу handle IOException
-        try {
+        Cart cart = new Cart(cartName);
+        jsonParser.writeToFile(cart);
 
-            Cart cart = new Cart(cartName);
-            jsonParser.writeToFile(cart);
-            PrintWriter writer = new PrintWriter(cartName, "UTF-8");
-            writer.write("The first line");
-            writer.write("The second line");
-            writer.close();
+        File file = new File(filePath);
+        Cart expectedCart = jsonParser.readFromFile(file);
+        String expectedCartName = expectedCart.getCartName();
 
-            InputStream inputStreamActual = JsonParserTest.class.getResourceAsStream("/" + cartName + ".json");
-            String actualData = readFromInputStream(inputStreamActual);
-            assertEquals(expectedData, actualData, "Error on write to file");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String readFromInputStream(InputStream inputStream)
-            throws IOException {
-        StringBuilder resultStringBuilder = new StringBuilder();
-        try (BufferedReader br
-                     = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                resultStringBuilder.append(line).append("\n");
-            }
-        }
-        return resultStringBuilder.toString();
+        assertEquals(expectedCartName, cartName, "Error on write to file");
     }
 
     @DisplayName(value = "JSON Parser test - Read from file")
     @Test
     public void ParserReadTestPositive() {
-        String filePath = "src/main/resources/andrew-cart.json";
+        String expectedCartName = faker.name().lastName().toLowerCase(Locale.ROOT);
+        Cart expectedCart = new Cart(expectedCartName);
+
+        RealItem flowerRealItem = new RealItem();
+        double bottleItemPrice = 876.0;
+        double expectedTotalPrice = bottleItemPrice + bottleItemPrice*0.2;
+        flowerRealItem.setPrice(bottleItemPrice);
+        expectedCart.addRealItem(flowerRealItem);
+        jsonParser.writeToFile(expectedCart);
+
+        String filePath = String.format(RESOURCE_PATH, expectedCartName);
+        listOfFiles.add(filePath);
         File file = new File(filePath);
-        Cart cart = jsonParser.readFromFile(file);
+        Cart actualCart = jsonParser.readFromFile(file);
 
-        assertNotNull(cart);
-        String actualCartName = cart.getCartName();
+        assertNotNull(actualCart);
+        String actualCartName = actualCart.getCartName();
         assertNotNull(actualCartName);
-        String expectedCartName = "andrew-cart";
 
-        double expectedTotalPrice = 38445.479999999996;
-        double actualTotalPrice = cart.getTotalPrice();
+        double actualTotalPrice = actualCart.getTotalPrice();
 
         assertAll("Real Item test:",
-                () -> assertEquals(expectedCartName, actualCartName, "Invalid cart name"),
-                () -> assertEquals(expectedTotalPrice, actualTotalPrice, "Invalid cart total price")
+                () -> assertEquals(expectedCartName, actualCartName, "Invalid expectedCart name"),
+                () -> assertEquals(expectedTotalPrice, actualTotalPrice, "Invalid expectedCart total price")
         );
     }
 
     @ParameterizedTest
     @DisplayName(value = "JSON Parser test - Read from invalid files")
-    @CsvSource(value = {"fileName:123456", "fileName:DashaTest$$$%%", "fileName:      PetyaTestWithSpaces", "fileName:___NikitaTest", "fileName:D://Downloads/testFileWindows.json","fileName:/home/user/tmp/fileTest23Linux.json","fileName:/Users/misv/Documents/Docs/fileTestMac.json","fileName:soLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFile.json"}, delimiter = ':')
+    @CsvSource(value = {"fileName:123456", "fileName:DashaTest$$$%%", "fileName:      PetyaTestWithSpaces", "fileName:___NikitaTest", "fileName:D://Downloads/testFileWindows.json", "fileName:/home/user/tmp/fileTest23Linux.json", "fileName:/Users/misv/Documents/Docs/fileTestMac.json", "fileName:soLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFile.json"}, delimiter = ':')
     public void ParserReadTestNegative2(String filePath) {
         File file = new File(filePath);
         assertThrows(NoSuchFileException.class, () -> {
@@ -98,9 +88,11 @@ public class JsonParserTest {
 
     @AfterAll
     static void destroy() {
-        File file = new File("src/main/resources/parser-test.json");
-        if (!file.delete()) {
-            throw new RuntimeException("Can't delete temp file");
+        for (String filePath : listOfFiles) {
+            File file = new File(filePath);
+            if (file.exists() && !file.delete()) {
+                throw new RuntimeException("Can't delete temp file");
+            }
         }
     }
 }
