@@ -21,7 +21,7 @@ public class CartTest {
 
     @DisplayName(value = "Cart test - Add Real item to Cart test")
     @Test
-    public void CartAddRealItemToCartTest() {
+    public void cartAddRealItemToCartTest() {
 
         RealItem bottleRealItem = new RealItem();
         double bottleItemPrice = 876.0;
@@ -38,7 +38,7 @@ public class CartTest {
 
     @DisplayName(value = "Cart test - Add Virtual item to Cart test")
     @Test
-    public void CartAddVirtualItemToCartTest() {
+    public void cartAddVirtualItemToCartTest() {
 
         VirtualItem printVirtualItem = new VirtualItem();
         double printItemPrice = 432.01;
@@ -55,7 +55,7 @@ public class CartTest {
 
     @DisplayName(value = "Cart test - Delete Item test")
     @Test
-    public void CartDeleteRealItemTest() {
+    public void cartDeleteRealItemTest() {
 
         RealItem testRealItem = new RealItem();
         double realItemPrice = 123.0;

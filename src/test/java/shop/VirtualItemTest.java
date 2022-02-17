@@ -17,7 +17,7 @@ public class VirtualItemTest {
 
     @DisplayName(value = "Virtual Item test - To String for Virtual Item")
     @Test
-    public void VirtualItemToStringTest() {
+    public void virtualItemToStringTest() {
         double sizeOnDisc = 123.0;
         String virtualItemName = "testVirtualName";
         double virtualItemPrice = 321.0;
