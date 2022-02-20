@@ -56,9 +56,7 @@ public class JsonParserTest {
         double expectedTotalPrice = laptopPrice + laptopPrice*0.2;
 
         jsonParser.writeToFile(cart);
-
         String actualData = readFromInputStream();
-        assertTrue(actualData.contains(cartName), "Error on writeToFile");
 
         assertAll("Real Item test:",
                 () -> assertTrue(actualData.contains(cartName), "Error on writeToFile"),
