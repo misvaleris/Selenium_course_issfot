@@ -3,10 +3,7 @@ package parser;
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import shop.Cart;
@@ -45,7 +42,7 @@ public class JsonParserTest {
         listOfFiles.add(filePath);
     }
 
-    //    @Disabled("Disabled for testing purposes")
+    @Disabled("Disabled for testing purposes")
     @DisplayName(value = "JSON Parser test - Write to existing file")
     @Test
     public void parserWritePositiveTest() throws IOException {
