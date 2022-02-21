@@ -1,22 +1,23 @@
 package shop;
 
-import org.junit.jupiter.api.*;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Ignore
 public class VirtualItemTest {
 
     private VirtualItem desk;
 
-    @BeforeAll
+    @BeforeClass
     public void setup() {
         desk = new VirtualItem();
 
     }
 
-    @DisplayName(value = "Virtual Item test - To String for Virtual Item")
-    @Test
+    @Test (description = "Virtual Item test - To String for Virtual Item")
     public void virtualItemToStringTest() {
         double sizeOnDisc = 123.0;
         String virtualItemName = "testVirtualName";
@@ -27,10 +28,10 @@ public class VirtualItemTest {
         String expectedString = "Class: " + desk.getClass() + "; Name: " + virtualItemName + "; Price: " + virtualItemPrice +"; Size on disk: " +sizeOnDisc;
 
         String actualString = desk.toString();
-        assertEquals(expectedString,actualString, "Text is not equals");
+        Assert.assertEquals(expectedString,actualString, "Text is not equals");
     }
 
-    @AfterAll
+    @AfterClass
     public void teardown() {
         desk = null;
     }

@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="unpredictable order" verbose="1">
+    <test name="Json Parser tests">
+        <classes>
+            <class name="parser.JsonParserTest">
+                <methods>
+                    <include name="parserReadTestNegative2"/>
+                    <include name="parserReadTestPositive"/>
+                    <include name="parserWritePositive"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

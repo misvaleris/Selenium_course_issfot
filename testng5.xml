@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="Groups Test">
+    <test name="Cart tests">
+        <groups>
+            <run>
+                <include name="addToCart"/>
+                <exclude name="deleteFromCart"></exclude>
+            </run>
+        </groups>
+
+        <classes>
+            <class name="shop.CartTest"/>
+        </classes>
+
+    </test>
+</suite>

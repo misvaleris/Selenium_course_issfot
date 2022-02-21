@@ -3,9 +3,9 @@ package parser;
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.testng.Assert;
+import org.testng.annotations.*;
+import org.testng.asserts.SoftAssert;
 import shop.Cart;
 import shop.RealItem;
 import shop.VirtualItem;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.assertThrows;
 
 public class JsonParserTest {
 
@@ -31,7 +31,7 @@ public class JsonParserTest {
     private static Faker faker;
     private static List<String> listOfFiles;
 
-    @BeforeEach
+    @BeforeClass
     public void init() {
         jsonParser = new JsonParser();
         faker = new Faker();
@@ -42,10 +42,8 @@ public class JsonParserTest {
         listOfFiles.add(filePath);
     }
 
-    @Disabled("Disabled for testing purposes")
-    @DisplayName(value = "JSON Parser test - Write to existing file")
-    @Test
-    public void parserWritePositiveTest() throws IOException {
+    @Test(description = "JSON Parser test - Write to existing file")
+    public void parserWritePositive() throws IOException {
         Cart cart = new Cart(cartName);
 
         VirtualItem laptop = new VirtualItem();
@@ -53,15 +51,16 @@ public class JsonParserTest {
         laptop.setPrice(laptopPrice);
         cart.addVirtualItem(laptop);
         double actualTotalPrice = cart.getTotalPrice();
-        double expectedTotalPrice = laptopPrice + laptopPrice*0.2;
+        double expectedTotalPrice = laptopPrice + laptopPrice * 0.2;
 
         jsonParser.writeToFile(cart);
         String actualData = readFromInputStream();
+        SoftAssert softAssert = new SoftAssert();
 
-        assertAll("Real Item test:",
-                () -> assertTrue(actualData.contains(cartName), "Error on writeToFile"),
-                () -> assertEquals(expectedTotalPrice, actualTotalPrice, "Invalid expectedCart total price")
-        );
+        softAssert.assertTrue(actualData.contains(cartName), "Error on writeToFile");
+        softAssert.assertEquals(expectedTotalPrice, actualTotalPrice, "Invalid expectedCart total price");
+        softAssert.assertAll();
+
     }
 
     private String readFromInputStream() throws IOException {
@@ -70,8 +69,8 @@ public class JsonParserTest {
         return fileContent.isEmpty() ? StringUtils.EMPTY : fileContent.get(0);
     }
 
-    @DisplayName(value = "JSON Parser test - Read from file")
-    @Test
+
+    @Test(description = "JSON Parser test - Read from file")
     public void parserReadTestPositive() throws IOException {
         String expectedCartName = faker.name().lastName().toLowerCase(Locale.ROOT);
         Cart expectedCart = new Cart(expectedCartName);
@@ -89,16 +88,17 @@ public class JsonParserTest {
         File file = new File(filePath);
         Cart actualCart = jsonParser.readFromFile(file);
 
-        assertNotNull(actualCart);
+
+        Assert.assertNotNull(actualCart);
         String actualCartName = actualCart.getCartName();
-        assertNotNull(actualCartName);
+        Assert.assertNotNull(actualCartName);
 
         double actualTotalPrice = actualCart.getTotalPrice();
 
-        assertAll("Real Item test:",
-                () -> assertEquals(expectedCartName, actualCartName, "Invalid expectedCart name"),
-                () -> assertEquals(expectedTotalPrice, actualTotalPrice, "Invalid expectedCart total price")
-        );
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(expectedCartName, actualCartName, "Invalid expectedCart name");
+        softAssert.assertEquals(expectedTotalPrice, actualTotalPrice, "Invalid expectedCart total price");
+        softAssert.assertAll();
     }
 
     private void writeToFile(Cart cart, String filePath) throws IOException {
@@ -108,9 +108,17 @@ public class JsonParserTest {
         Files.write(path, jsonToWrite.getBytes());
     }
 
-    @ParameterizedTest
-    @DisplayName(value = "JSON Parser test - Read from invalid files")
-    @CsvSource(value = {"fileName:123456", "fileName:DashaTest$$$%%", "fileName:      PetyaTestWithSpaces", "fileName:___NikitaTest", "fileName:D://Downloads/testFileWindows.json", "fileName:/home/user/tmp/fileTest23Linux.json", "fileName:/Users/misv/Documents/Docs/fileTestMac.json", "fileName:soLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFile.json"}, delimiter = ':')
+    /**
+     * First version od parametrized test
+     * */
+
+
+    @DataProvider(name = "fileName")
+    public static Object[][] fileNames() {
+        return new Object[][]{{"123456"}, {"DashaTest$$$%%"}, {"      PetyaTestWithSpaces"}, {"___NikitaTest"}, {"D://Downloads/testFileWindows.json"}, {"/home/user/tmp/fileTest23Linux.json"}, {"fileName:/Users/misv/Documents/Docs/fileTestMac.json"}, {"soLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFilesoLongNameOfFile.json"}};
+    }
+
+    @Test(dataProvider = "fileName", description = "JSON Parser test - Read from invalid files")
     public void parserReadTestNegative2(String filePath) {
         File file = new File(filePath);
         assertThrows(NoSuchFileException.class, () -> {
@@ -118,7 +126,20 @@ public class JsonParserTest {
         });
     }
 
-    @AfterAll
+    /**
+     * Second version od parametrized test
+     * */
+
+    @Parameters({ "fileName" })
+    @Test(description = "JSON Parser test - Read from invalid files")
+    public void parserReadTestNegative2_1(String filePath) {
+        File file = new File(filePath);
+        assertThrows(NoSuchFileException.class, () -> {
+            jsonParser.readFromFile(file);
+        });
+    }
+
+    @AfterClass
     static void destroy() {
         for (String filePath : listOfFiles) {
             File file = new File(filePath);
