@@ -25,7 +25,8 @@ public class VirtualItemTest {
         desk.setName(virtualItemName);
         desk.setPrice(virtualItemPrice);
         desk.setSizeOnDisk(sizeOnDisc);
-        String expectedString = "Class: " + desk.getClass() + "; Name: " + virtualItemName + "; Price: " + virtualItemPrice +"; Size on disk: " +sizeOnDisc;
+        String expectedString = String.format("Class: %s; Name: %s; Price: %s; Size on disk: %s",desk.getClass(),virtualItemName,virtualItemPrice,sizeOnDisc);
+
 
         String actualString = desk.toString();
         Assert.assertEquals(expectedString,actualString, "Text is not equals");

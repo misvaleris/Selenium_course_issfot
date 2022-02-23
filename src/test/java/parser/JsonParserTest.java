@@ -31,7 +31,7 @@ public class JsonParserTest {
     private static Faker faker;
     private static List<String> listOfFiles;
 
-    @BeforeClass
+    @BeforeClass (alwaysRun = true)
     public void init() {
         jsonParser = new JsonParser();
         faker = new Faker();

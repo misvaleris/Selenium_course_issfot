@@ -3,7 +3,7 @@ package shop;
 import com.github.javafaker.Faker;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Locale;
@@ -12,7 +12,7 @@ public class CartTest {
 
     private static String cartName;
 
-    @BeforeClass
+    @BeforeMethod (alwaysRun = true)
     public void setup() {
         Faker faker = new Faker();
         cartName = faker.name().lastName().toLowerCase(Locale.ROOT);

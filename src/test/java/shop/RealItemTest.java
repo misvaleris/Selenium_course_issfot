@@ -21,7 +21,7 @@ public class RealItemTest {
         car.setName(realItemName);
         car.setPrice(realItemPrice);
         car.setWeight(realItemWeight);
-        String expectedString = "Class: " + car.getClass() + "; Name: " + realItemName + "; Price: " + realItemPrice +"; Weight: " +realItemWeight;
+        String expectedString = String.format("Class: %s; Name: %s; Price: %s; Weight: %s",car.getClass(),realItemName,realItemPrice,realItemWeight);
 
         String actualString = car.toString();
         Assert.assertEquals(expectedString,actualString, "Text is not equals");
