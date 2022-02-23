@@ -50,23 +50,27 @@ public class JsonParserTest {
         double laptopPrice = 567.0;
         laptop.setPrice(laptopPrice);
         cart.addVirtualItem(laptop);
-        double actualTotalPrice = cart.getTotalPrice();
-        double expectedTotalPrice = laptopPrice + laptopPrice * 0.2;
+        String expectedTotalPrice = String.valueOf(cart.getTotalPrice());
 
         jsonParser.writeToFile(cart);
         String actualData = readFromInputStream();
         SoftAssert softAssert = new SoftAssert();
 
         softAssert.assertTrue(actualData.contains(cartName), "Error on writeToFile");
-        softAssert.assertEquals(expectedTotalPrice, actualTotalPrice, "Invalid expectedCart total price");
+        softAssert.assertTrue(actualData.contains(expectedTotalPrice), "Invalid expectedCart total price");
         softAssert.assertAll();
 
     }
 
-    private String readFromInputStream() throws IOException {
-        Path path = Paths.get(filePath);
-        List<String> fileContent = Files.readAllLines(path);
-        return fileContent.isEmpty() ? StringUtils.EMPTY : fileContent.get(0);
+    private String readFromInputStream() {
+        try {
+            Path path = Paths.get(filePath);
+            List<String> fileContent = Files.readAllLines(path);
+            return fileContent.isEmpty() ? StringUtils.EMPTY : fileContent.get(0);
+        } catch (IOException e) {
+           e.printStackTrace();
+           return "";
+        }
     }
 
 
@@ -77,17 +81,15 @@ public class JsonParserTest {
 
         RealItem flowerRealItem = new RealItem();
         double bottleItemPrice = 876.0;
-        double expectedTotalPrice = bottleItemPrice + bottleItemPrice * 0.2;
         flowerRealItem.setPrice(bottleItemPrice);
         expectedCart.addRealItem(flowerRealItem);
-
         String filePath = String.format(RESOURCE_PATH, expectedCartName);
         writeToFile(expectedCart, filePath);
+        double expectedTotalPrice = expectedCart.getTotalPrice();
 
         listOfFiles.add(filePath);
         File file = new File(filePath);
         Cart actualCart = jsonParser.readFromFile(file);
-
 
         Assert.assertNotNull(actualCart);
         String actualCartName = actualCart.getCartName();
