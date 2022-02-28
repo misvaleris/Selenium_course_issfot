@@ -31,7 +31,7 @@ public class JsonParserTest {
     private static Faker faker;
     private static List<String> listOfFiles;
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     public void init() {
         jsonParser = new JsonParser();
         faker = new Faker();
@@ -43,7 +43,7 @@ public class JsonParserTest {
     }
 
     @Test(description = "JSON Parser test - Write to existing file")
-    public void parserWritePositive() throws IOException {
+    public void parserWritePositive() {
         Cart cart = new Cart(cartName);
 
         VirtualItem laptop = new VirtualItem();
@@ -68,14 +68,14 @@ public class JsonParserTest {
             List<String> fileContent = Files.readAllLines(path);
             return fileContent.isEmpty() ? StringUtils.EMPTY : fileContent.get(0);
         } catch (IOException e) {
-           e.printStackTrace();
-           return "";
+            e.printStackTrace();
+            throw new RuntimeException("Can't read from input stream", e);
         }
     }
 
 
     @Test(description = "JSON Parser test - Read from file")
-    public void parserReadTestPositive() throws IOException {
+    public void parserReadTestPositive() {
         String expectedCartName = faker.name().lastName().toLowerCase(Locale.ROOT);
         Cart expectedCart = new Cart(expectedCartName);
 
@@ -103,16 +103,20 @@ public class JsonParserTest {
         softAssert.assertAll();
     }
 
-    private void writeToFile(Cart cart, String filePath) throws IOException {
-        String jsonToWrite = gson.toJson(cart);
-        Path path = Paths.get(filePath);
-
-        Files.write(path, jsonToWrite.getBytes());
+    private void writeToFile(Cart cart, String filePath) {
+        try {
+            String jsonToWrite = gson.toJson(cart);
+            Path path = Paths.get(filePath);
+            Files.write(path, jsonToWrite.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Can't write to file", e);
+        }
     }
 
     /**
      * First version od parametrized test
-     * */
+     */
 
 
     @DataProvider(name = "fileName")
@@ -130,9 +134,9 @@ public class JsonParserTest {
 
     /**
      * Second version od parametrized test
-     * */
+     */
 
-    @Parameters({ "fileName" })
+    @Parameters({"fileName"})
     @Test(description = "JSON Parser test - Read from invalid files")
     public void parserReadTestNegative2_1(String filePath) {
         File file = new File(filePath);
