@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="ParameterizedTest">
+    <test name="parserReadTestNegative2_1">
+
+        <parameter name="fileName" value="123456"/>
+        <classes>
+            <class name="parser.JsonParserTest">
+                <methods>
+                    <include name="parserReadTestNegative2_1"/>
+                </methods>
+            </class>
+        </classes>
+
+    </test>
+</suite>
